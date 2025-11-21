@@ -7,7 +7,7 @@ interface Company {
   logo: string;
   description: string;
   invertLogo?: boolean;
-  accentColor?: string;
+  accentColor?: string; // We'll keep this in data but use a static color for the border
 }
 
 const companies: Company[] = [
@@ -21,25 +21,27 @@ const companies: Company[] = [
   {
     name: "Soft Vision Technologies (Pvt) Ltd",
     url: "https://busy.lk/",
-    logo: "https://busy.lk/images/soft-vision-logo.png", // Local path or correct URL
+    logo: "https://busy.lk/images/soft-vision-logo.png",
     description: "Business Management Solutions",
     accentColor: "#10B981"
   },
   {
-    name: "BusyERP",
+    name: "Busy InfoTech (Pvt) Ltd",
     url: "https://www.busyerp.lk/",
-    logo: "https://www.busyerp.lk/wp-content/uploads/2019/02/Busy-Logo-02.png", // Local path or correct URL
+    logo: "https://www.busyerp.lk/wp-content/uploads/2019/02/Busy-Logo-02.png",
     description: "Cloud-based ERP Systems",
     accentColor: "#8B5CF6"
   },
   {
     name: "Skyb Overseas Consultants (Pvt) Ltd",
     url: "https://skyb.lk/",
-    logo: "https://skyb.lk/logosky2.jpg", // Local path or correct URL
-    description: "Next-gen cloud infrastructure",
+    logo: "https://skyb.lk/logosky2.jpg",
+    description: "Your best choice for overseas education",
     accentColor: "#F59E0B"
   },
 ];
+
+const ELECTRIC_CYAN = "#00FFFF"; // Static color for the beautiful electric border
 
 const CompanyShowcase = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -57,6 +59,30 @@ const CompanyShowcase = () => {
       .join('')
       .toUpperCase()
       .slice(0, 3);
+  };
+
+  // Variants for the Electric Border Animation
+  const borderVariants = {
+    hidden: { 
+        pathLength: 0, 
+        opacity: 0 
+    },
+    visible: {
+        pathLength: 1,
+        opacity: 1,
+        transition: {
+            duration: 0.7,
+            ease: "easeInOut",
+        },
+    },
+    hover: {
+        pathLength: 1,
+        opacity: 1,
+        transition: {
+            duration: 0.3,
+            ease: "easeOut",
+        },
+    },
   };
 
   return (
@@ -107,9 +133,8 @@ const CompanyShowcase = () => {
           className="text-center mb-20"
         >
           <motion.h2
-            className="text-4xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-white via-cyan-200 to-blue-200 bg-clip-text text-transparent drop-shadow-2xl mb-6 font-sans"
+            className="text-4xl md:text-6xl lg:text-6xl font-serif bg-gradient-to-r from-white via-cyan-200 to-blue-200 bg-clip-text text-transparent drop-shadow-2xl mb-6 font-sans"
             animate={{
-              // You can change the text size in the className above (e.g., text-4xl, md:text-6xl)
               backgroundPosition: ["0%", "100%", "0%"],
             }}
             transition={{
@@ -154,40 +179,52 @@ const CompanyShowcase = () => {
               onHoverStart={() => setHoveredCard(index)}
               onHoverEnd={() => setHoveredCard(null)}
             >
-              {/* Animated Background Orb */}
-              <motion.div
-                className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500"
-                style={{ backgroundColor: company.accentColor }}
-                animate={{
-                  scale: hoveredCard === index ? [1, 1.1, 1] : 1,
-                }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
-
-              {/* Main Card */}
+              {/* Main Card - 100% Transparent */}
               <motion.a
                 href={company.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block relative bg-white/5 backdrop-blur-2xl border border-white/15 hover:border-white/40 rounded-3xl p-8 transition-all duration-500 overflow-hidden cursor-pointer h-full"
+                className="block relative bg-transparent rounded-3xl p-8 transition-all duration-500 overflow-hidden cursor-pointer h-full border border-white/0" 
                 whileHover={{
                   y: -8,
                   transition: { type: "spring", stiffness: 300 }
                 }}
-                style={{
-                  background: `linear-gradient(135deg, ${company.accentColor}10, transparent 30%)`
-                }}
               >
-                {/* Hover Glow Effect */}
-                <div
-                  className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                  style={{
-                    boxShadow: `0 0 60px ${company.accentColor}30`,
-                  }}
-                />
+                {/* ⚡ Enhanced Electric Hover Border Effect ⚡ */}
+                <AnimatePresence>
+                  {hoveredCard === index && (
+                    <motion.svg
+                      className="absolute inset-0 w-full h-full"
+                      viewBox="0 0 100 100"
+                      preserveAspectRatio="none"
+                      // Apply a strong glow filter using CSS shadow
+                      style={{ filter: `drop-shadow(0 0 10px ${ELECTRIC_CYAN}) drop-shadow(0 0 4px ${ELECTRIC_CYAN})` }}
+                    >
+                      {/* Main solid border line */}
+                      <motion.rect
+                        x="1"
+                        y="1"
+                        width="98"
+                        height="98"
+                        rx="12"
+                        fill="transparent"
+                        stroke={ELECTRIC_CYAN}
+                        strokeWidth="1" // Thin solid line
+                        variants={borderVariants}
+                        initial="hidden"
+                        animate="hover"
+                        exit="hidden"
+                      />
+                    </motion.svg>
+                  )}
+                </AnimatePresence>
+                
+                {/* Inner White Overlay for readability inside the transparent card */}
+                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors duration-300 rounded-3xl"></div>
+
 
                 <div className="flex flex-col items-center text-center space-y-8 h-full relative z-10">
-                  {/* Enhanced Logo Container */}
+                  {/* Enhanced Logo Container (White Background retained) */}
                   <motion.div
                     className={`relative w-28 h-28 rounded-2xl flex items-center justify-center p-6 shadow-2xl transition-all duration-500 bg-white group-hover:bg-gray-50`}
                     whileHover={{
@@ -211,7 +248,7 @@ const CompanyShowcase = () => {
                           src={company.logo}
                           alt={company.name}
                           loading="lazy"
-                          className="max-h-16 max-w-full object-contain transition-all duration-300"
+                          className="max-h-16 max-w-full object-contain transition-all duration-300" 
                           onError={() => handleImageError(index)}
                         />
                       ) : (
@@ -242,7 +279,7 @@ const CompanyShowcase = () => {
                       className="text-xl font-bold text-white leading-tight"
                       whileHover={{ 
                         scale: 1.05,
-                        color: company.accentColor
+                        color: ELECTRIC_CYAN // Use static hover color for text too
                       }}
                     >
                       {company.name}
@@ -273,15 +310,16 @@ const CompanyShowcase = () => {
                           repeatType: "reverse"
                         }}
                         className="w-5 h-5 rounded-full flex items-center justify-center text-xs"
-                        style={{ backgroundColor: company.accentColor }}
+                        // Use static color for the CTA button/arrow too
+                        style={{ backgroundColor: ELECTRIC_CYAN }} 
                       >
-                        →
+                        <span className="text-black">→</span>
                       </motion.div>
                     </div>
                   </motion.div>
                 </div>
 
-                {/* Floating Elements */}
+                {/* Floating Elements - Keeping for added flair */}
                 <AnimatePresence>
                   {hoveredCard === index && (
                     <>
@@ -290,7 +328,7 @@ const CompanyShowcase = () => {
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0, opacity: 0 }}
                         className="absolute -top-2 -right-2 w-6 h-6 rounded-full"
-                        style={{ backgroundColor: company.accentColor }}
+                        style={{ backgroundColor: ELECTRIC_CYAN }}
                       />
                       <motion.div
                         initial={{ scale: 0, opacity: 0 }}
@@ -298,7 +336,7 @@ const CompanyShowcase = () => {
                         exit={{ scale: 0, opacity: 0 }}
                         transition={{ delay: 0.1 }}
                         className="absolute -bottom-2 -left-2 w-4 h-4 rounded-full"
-                        style={{ backgroundColor: company.accentColor }}
+                        style={{ backgroundColor: ELECTRIC_CYAN }}
                       />
                     </>
                   )}

@@ -41,7 +41,7 @@ const Preloader = () => {
     >
       <motion.div variants={logoVariants} animate="animate">
         <img
-          src="https://svg.lk/assets/logo-CetAuJiQ.png"
+          src="/public/logo.png"
           alt="SoftVision Group Loading"
           className="h-32 md:h-40 object-contain drop-shadow-lg"
         />
